@@ -33,6 +33,12 @@ app.use('/public', express.static(__dirname + '/public'));
 app.use(cookieParser());
 app.use(session({secret: "No one  must know ;)"}));
 
+app.get('/', function (req, res) {
+  res.redirect('/public/index.html');
+  return;
+});
+
+
 app.post('/signin', function(req, res) {
     var collection = db.get('user');
     collection.find({user_email:req.body.emailid,user_pass:req.body.password}, function(err, result){
@@ -40,10 +46,9 @@ app.post('/signin', function(req, res) {
         //res.redirect('/public/homepage.html');
         sess = req.session;
         sess.user_email = result[0]['user_email'];  
-        sess.user_id = result[0]['user_id'];
+        //sess.user_id = result[0]['user_id'];
       	//res.json(videos);
       	res.cookie('name','test',{expire:360000+Date.now()}); 
-        
         res.redirect('/public/homepage.html');
 
     });
@@ -80,7 +85,7 @@ app.post('/signup', (req, res) => {
                 throw err;
             }
             
-            console.log("1 record added");
+            console.log("record added");
             res.send("done");
         }
         catch(err){
@@ -91,10 +96,6 @@ app.post('/signup', (req, res) => {
     //index = index+1;
 
 });
-
-
-
-
 
 app.post('/search', (req, res) => {
     console.log(sess.user_id);
@@ -116,6 +117,13 @@ app.post('/search', (req, res) => {
        //console.log(flight);
 
     });
+});
+
+app.get('/resetSession',function(req,res){
+  console.log('dddd');
+  res.cookie("name","");
+  console.log('Cookies:', req.cookies);
+  res.send("Cokkie reset");
 });
 
 //app.use('/', indexRouter);

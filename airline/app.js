@@ -108,6 +108,20 @@ app.post('/seatSelect', function(req, res){
 });
 
 
+app.post('/signinAdmin', (req, res) => {
+  var collection = db.get('admin');
+  collection.find({user_email:req.body.emailid,user_pass:req.body.password}, function(err, result){
+        if (err) throw err;
+        //res.redirect('/public/homepage.html');
+        sess = req.session;
+        sess.user_email = result[0]['user_email'];  
+        //sess.user_id = result[0]['user_id'];
+      	//res.json(videos);
+      	res.cookie('name','test',{expire:360000+Date.now()}); 
+        res.redirect('/public/admin.html');
+
+    });
+});
 
 app.post('/search', (req, res) => {
     console.log(sess.user_id);

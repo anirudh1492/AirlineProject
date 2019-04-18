@@ -1,0 +1,3 @@
+{"_id":{"$oid":"5ca56dec527e13f96c7a2c97"},"user_id":1.0,"user_pass":"an1rudh","fname":"Anirudh","lname":"Mehrotra"}
+{"_id":{"$oid":"5ca56fa9527e13f96c7a2c99"},"user_id":2.0,"user_pass":"an1rudh","fname":"Anirudh","lname":"Mehrotra","user_email":"anirudhsarthak@gmail.com"}
+{"_id":{"$oid":"5ca90c3a527e13f96c7a2c9b"},"user_id":3.0,"fname":"Deepesh","user_email":"deepesh@gmail.com","user_pass":"deepesh123"}

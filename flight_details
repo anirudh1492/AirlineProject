@@ -1,0 +1,2 @@
+{"_id":{"$oid":"5cabf2b6527e13f96c7a2c9c"},"airline_id":1.0,"airline_name":"Qatar","from":"DFW","to":"DEL","total_seats":600.0,"departure_dates":"2019-04-08","departure_time":"02:00:00","arrival_date":"2019-04-08","arrival_time":"04:00:00","price":800.0,"seats_left":600.0}
+{"_id":{"$oid":"5cabf41b527e13f96c7a2c9d"},"airline_id":2.0,"airline_name":"Emirates","from":"DFW","to":"DEL","total_seats":650.0,"departure_dates":"2019-04-08","departure_time":"02:00:00","arrival_date":"2019-04-08","arrival_time":"04:00:00","price":750.0,"seats_left":650.0}

@@ -8,7 +8,7 @@ var session = require('express-session');
 var sess
 var indexRouter = require('./routes');
 var usersRouter = require('./routes/users');
-
+//var index = 8;
 
 
 var monk = require('monk');
@@ -33,23 +33,80 @@ app.use('/public', express.static(__dirname + '/public'));
 app.use(cookieParser());
 app.use(session({secret: "No one  must know ;)"}));
 
+app.get('/', function (req, res) {
+  res.redirect('/public/index.html');
+  return;
+});
+
+
 app.post('/signin', function(req, res) {
     var collection = db.get('user');
-    collection.find({user_email:req.body.emailid,user_pass:req.body.password}, function(err, videos){
+    collection.find({user_email:req.body.emailid,user_pass:req.body.password}, function(err, result){
         if (err) throw err;
         //res.redirect('/public/homepage.html');
         sess = req.session;
-        sess.user_email = videos[0]['user_email'];  
-        sess.user_id = videos[0]['user_id'];
+        sess.user_email = result[0]['user_email'];  
+        //sess.user_id = result[0]['user_id'];
       	//res.json(videos);
       	res.cookie('name','test',{expire:360000+Date.now()}); 
-        
         res.redirect('/public/homepage.html');
 
     });
     
     
 });
+
+app.post('/signup', (req, res) => {
+    var collection = db.get('user');
+    var firstname = req.body.firstname;
+    var lastname = req.body.lastname;
+    var password = req.body.password;
+    var emailid = req.body.emailid;
+    var mobile = parseInt(req.body.mobile);
+    console.log(password);
+    //var sql = "insert into user_profile(user_password, firstname, lastname, mobile_number, email_id) values (MD5('"+password+"'),'"+firstname+"','"+lastname+"','"+mobile+"','"+emailid+"')";
+    //console.log(sql);
+    //con.query(sql, function(err, result){
+      //  try{
+        //    if(err){
+                //throw err;
+          //  }
+            //console.log("1 record added");
+            //res.send("done");
+        //}
+        //catch(err){
+          //  res.send(err);
+        //}
+    //});
+
+    collection.insert({fname:firstname,lname:lastname,user_pass:password,user_email:emailid},function(err,result){
+        try{
+            if(err){
+                throw err;
+            }
+            
+            console.log("record added");
+            res.send("done");
+        }
+        catch(err){
+            res.send(err);
+        }
+
+    });
+    //index = index+1;
+
+});
+
+app.post('/seatSelect', function(req, res){
+    var path = __dirname+"\\public\\flightSeats.html";
+    console.log(path);
+    fs.readFile(path, function(err, data){
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.write(data);
+        res.end();
+    });
+});
+
 
 
 app.post('/search', (req, res) => {
@@ -72,6 +129,13 @@ app.post('/search', (req, res) => {
        //console.log(flight);
 
     });
+});
+
+app.get('/resetSession',function(req,res){
+  console.log('dddd');
+  res.cookie("name","");
+  console.log('Cookies:', req.cookies);
+  res.send("Cokkie reset");
 });
 
 //app.use('/', indexRouter);

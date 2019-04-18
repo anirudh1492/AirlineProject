@@ -8,7 +8,7 @@ var session = require('express-session');
 var sess
 var indexRouter = require('./routes');
 var usersRouter = require('./routes/users');
-
+//var index = 8;
 
 
 var monk = require('monk');
@@ -35,12 +35,12 @@ app.use(session({secret: "No one  must know ;)"}));
 
 app.post('/signin', function(req, res) {
     var collection = db.get('user');
-    collection.find({user_email:req.body.emailid,user_pass:req.body.password}, function(err, videos){
+    collection.find({user_email:req.body.emailid,user_pass:req.body.password}, function(err, result){
         if (err) throw err;
         //res.redirect('/public/homepage.html');
         sess = req.session;
-        sess.user_email = videos[0]['user_email'];  
-        sess.user_id = videos[0]['user_id'];
+        sess.user_email = result[0]['user_email'];  
+        sess.user_id = result[0]['user_id'];
       	//res.json(videos);
       	res.cookie('name','test',{expire:360000+Date.now()}); 
         
@@ -50,6 +50,50 @@ app.post('/signin', function(req, res) {
     
     
 });
+
+app.post('/signup', (req, res) => {
+    var collection = db.get('user');
+    var firstname = req.body.firstname;
+    var lastname = req.body.lastname;
+    var password = req.body.password;
+    var emailid = req.body.emailid;
+    var mobile = parseInt(req.body.mobile);
+    console.log(password);
+    //var sql = "insert into user_profile(user_password, firstname, lastname, mobile_number, email_id) values (MD5('"+password+"'),'"+firstname+"','"+lastname+"','"+mobile+"','"+emailid+"')";
+    //console.log(sql);
+    //con.query(sql, function(err, result){
+      //  try{
+        //    if(err){
+                //throw err;
+          //  }
+            //console.log("1 record added");
+            //res.send("done");
+        //}
+        //catch(err){
+          //  res.send(err);
+        //}
+    //});
+
+    collection.insert({fname:firstname,lname:lastname,user_pass:password,user_email:emailid},function(err,result){
+        try{
+            if(err){
+                throw err;
+            }
+            
+            console.log("1 record added");
+            res.send("done");
+        }
+        catch(err){
+            res.send(err);
+        }
+
+    });
+    //index = index+1;
+
+});
+
+
+
 
 
 app.post('/search', (req, res) => {

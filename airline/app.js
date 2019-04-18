@@ -92,7 +92,15 @@ app.post('/signup', (req, res) => {
 
 });
 
-
+app.post('/seatSelect', function(req, res){
+    var path = __dirname+"\\public\\flightSeats.html";
+    console.log(path);
+    fs.readFile(path, function(err, data){
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.write(data);
+        res.end();
+    });
+});
 
 
 

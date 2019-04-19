@@ -26,7 +26,13 @@ app.set('view engine', 'jade');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+//app.use('/', indexRouter);
+app.use('/users', usersRouter);
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+  next(createError(404));
+});
+
 //app.use(express.static(path.join(__dirname, 'public')));
 app.use('/public', express.static(__dirname + '/public'));
 
@@ -46,7 +52,7 @@ app.post('/signin', function(req, res) {
         //res.redirect('/public/homepage.html');
         sess = req.session;
         sess.user_email = result[0]['user_email'];  
-        //sess.user_id = result[0]['user_id'];
+        sess.profile_id = result[0]['_id'];
       	//res.json(videos);
       	res.cookie('name','test',{expire:360000+Date.now()}); 
         res.redirect('/public/homepage.html');
@@ -152,13 +158,212 @@ app.get('/resetSession',function(req,res){
   res.send("Cokkie reset");
 });
 
-//app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.post('/bookedSeats', function (req, res) {
+  console.log("server side " + req.body.flightId);
+  var collection = db.get("ticket_details");
+  var flightID = req.body.flightId;
+  sess.flight_id = flightID;
+  var dateFrom = req.body.dateFrom;
+  sess.flight_departure_date = dateFrom;
+  //var sql = "select group_concat(seat_number) as seat_numbers from passenger_seat inner join air_ticket_info on passenger_seat.ticket_id = air_ticket_info.ticket_id  where flight_id = "+flightID+" and flight_departure_date ='"+ dateFrom+"';";
+    collection.find({f_id: flightId, f_dep_date: dateFrom}, { seat_details:1}, function (err, result) {
+    if (err) throw err;
+    res.send(result);
+  });
+});
+
+app.post('/bookSeats', (req, res) => {
+  var collection = db.get('ticket_details');
+  console.log(req.body.length);
+  //var profile_id = sess.profile_id;
+  var email_id = sess.user_email;
+  var flight_id = sess.flight_id;
+  var flight_departure_date = sess.flight_departure_date;
+  var seatArray = [];
+  var passangerDetails = [];
+  //To auto-increment ticket_id
+  var sequenceDocument = collection.findAndModify({
+    query:{_id: sequenceName },
+    update: {$inc:{sequence_value:1}},
+    new:true
+ });
+
+ //To get details of multiple people in one bookin
+  for (var i = 0; i < req.body.length; i++) {
+    seatArray.push(req.body[i].seatnumber);
+    passangerDetails.push(req.body[i].passengername);
+  }
+
+  var flight_status = 1;
+  
+  collection.insert({_id:sequenceDocument.sequence_value, booked_by: email_id, f_id: flight_id, f_dep_date: flight_departure_date, f_status: flight_status,
+  seat_details:seatArray, passenger_details: passangerDetails}, function (err, result) {
+    try {
+      if (err) {
+        throw err;
+      }
+      console.log("ticket record added");
+      res.send("done");
+    }
+    catch (err) {
+      res.send(err);
+    }
+
+  });
+});
+
+app.post('/findmybooking', (req, res) => {
+  var ticketid = req.body.ticketid;
+  var lastname = req.body.lastname;
+  var u_email = sess.email_id;
+  var collection = db.get("ticket_details");
+  //console.log(ticketid);
+  //var sql = "select * from air_ticket_info where ticketid='"+ticketid;
+  collections.find({_id:ticketid,booked_by:u_email}, function(err, result){
+    if(err) throw err;
+    res.send(result);
+  });
+});
+
+//Anshul -- we need to use findAndModify with ticketid and email. This can be done later.
+app.post('/onlinecheckin', (req, res) => {
+  var ticketid = req.body.ticketid;
+  var lastname = req.body.lastname;
+  console.log(ticketid);
+  var sql = "SELECT (CASE WHEN count = 1 THEN 'present' ELSE 'not present' END) as isPresent FROM (SELECT COUNT(*) AS count FROM air_ticket_info INNER JOIN user_profile ON air_ticket_info.profile_id = user_profile.profile_id WHERE ticket_id = '"+ticketid+"' AND lastname = '"+lastname+"') AS a";
+  con.query(sql, function(err, result){
+      if (err) 
+          throw err;
+      if(!result.includes('not')){
+          sql = "insert into passenger_checkin(ticket_id, checkedin) values(ticketid, 'true')";
+      }
+  });
+});
+
+//Anshul -- Complex query but since we are using one collection to store all the flight related data. This can be don. Need to check.
+app.post('/ticket', function(req, res){
+  console.log(req.body[0].ticket_id);
+  var ticketid = req.body[0].ticket_id;
+  var sql = "select air_flight.flight_id, air_flight_details.flight_departure_date, departure_time, flight_arrival_date, arrival_time, price, from_location, to_location from air_flight_details inner join air_ticket_info on air_flight_details.flight_id = air_ticket_info.flight_id inner join air_flight on air_flight.flight_id = air_flight_details.flight_id where ticket_id = '"+ticketid+"'";
+  con.query(sql, function(err, result){
+      if(err)
+          throw err;
+      res.send(result);
+  });
+});
+
+//Anshul -- Complex query but since we are using one collection to store all the flight related data. This can be don. Need to check.
+app.post('/ticketList', function(req, res){
+  console.log(req.body);
+  profile_id = sess.profile_id;
+  var sql = "select air_flight.flight_id, air_ticket_info.ticket_id, air_flight_details.flight_departure_date, departure_time, flight_arrival_date, arrival_time, from_location, to_location from air_flight_details inner join air_ticket_info on air_flight_details.flight_id = air_ticket_info.flight_id inner join air_flight on air_flight.flight_id = air_flight_details.flight_id where profile_id = '"+profile_id+"'";
+  console.log(sql);
+  con.query(sql, function(err, result){
+      if(err)
+          throw err;
+      res.send(result);
+  });
+});
 
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
+app.post('/passenger', (req, res) => {
+  console.log("passenger");
+  console.log(req.body[0].ticket_id);
+  ticket_id = req.body[0].ticket_id;
+  var collection = db.get("ticket_details");
+  //var sql = "select group_concat(fullname) as passengers from passenger_seat where ticket_id = '"+ticket_id+"'";
+  //console.log(sql);
+  collection.find({_id:ticket_id},{passenger_details:1}, function(err, result){
+    if(err)throw err;
+    res.send(result);
+  });
+});
+
+//Anshul -- Maybe we need to set a deleted tag.
+app.post('/flight', (req, res) => {
+  var collection = db.get("flight_details");
+  //var sql = "select flight_id, airline_name, from_location, to_location, total_seats from air_flight where deleted!='1'";
+  collections.find({deleted:0},{airline_id:1,airline_name:1,from:1,to:1,total_seats:1},
+    function(err,result){
+      if(err)throw err;
+      res.send(result);
+    });
+});
+
+//Anshul -- complex query. Need to check.
+app.post('/flights', (req, res) => {
+  var airline_name = req.body.airlinename;
+  var from_location = req.body.fromlocation;
+  var to_location = req.body.tolocation;
+  var totalseats = req.body.totalseats;
+  var departuredate = req.body.departuredate;
+  var departuretime = req.body.departuretime;
+  var arrivaldate = req.body.arrivaldate;
+  var arrivaltime = req.body.arrivaltime;
+  var price = req.body.price;
+  var sql = "insert into air_flight(airline_name, from_location, to_location, total_seats, deleted) values('"+airline_name+"', '"+from_location+"', '"+to_location+"', '"+totalseats+"', '0')";
+  console.log(sql);
+  con.query(sql, function(err, result){
+      if(err)
+          throw err;
+      sql = "select flight_id from air_flight where airline_name='"+airline_name+"' and from_location='"+from_location+"' and to_location='"+to_location+"' and total_seats='"+totalseats+"'";
+      console.log(sql);
+      con.query(sql, function(err, result){
+          if(err)
+              throw err;
+          console.log(result[0].flight_id);
+          sql = "insert into air_flight_details(flight_id, flight_departure_date, departure_time, flight_arrival_date, arrival_time, price, available_seats, deleted) values"+
+          "('"+result[0].flight_id+"', '"+departuredate+"', '"+departuretime+"', '"+arrivaldate+"', '"+arrivaltime+"', '"+price+"', '"+totalseats+"', '0')";
+          con.query(sql, function(err, result){
+              if(err)
+                  throw err;
+              console.log("success");
+          });
+      });
+  });
+});
+
+app.post('/updateFlight', (req, res) => {
+  var flight_id = req.body.flight_id;
+  var seat_number = req.body.seats;
+  console.log(flight_id+"-"+seat_number);
+  var collection = db.get("flight_details");
+  collection.update({airline_id:flight_id}, {$set:{total_seats:seat_number}});
+  //sql = "update air_flight set total_seats='"+seat_number+"' where flight_id='"+flight_id+"'";
+  // con.query(sql, function(err, result){
+  //     if(err)
+  //         throw err;
+  //     res.send("Updated");
+  // });
+
+});
+
+//Anshul -- complex sql query. Need to check.
+app.post('/deleteflight', (req, res) => {
+  var flight_id = req.body.flight_id;
+  var sql = "select count(*) as count from air_ticket_info where flight_id='"+flight_id+"'";
+  console.log(sql);
+  con.query(sql, function(err, result){
+      if(err)
+          throw err;
+      console.log(result[0].count);
+      if(parseInt(result[0].count)==0){
+          sql = "update air_flight set deleted='1' where flight_id = '"+flight_id+"'";
+          con.query(sql, function(err, result){
+              if(err)
+                  throw err;
+              sql = "update air_flight_details set deleted='1' where flight_id = '"+flight_id+"'";
+              con.query(sql, function(err, result){
+                  if(err)
+                      throw err;
+                  console.log("Successfully soft-deleted");
+              });
+          });
+      } else{
+          console.log("Cannot delete");
+          res.send("error");
+      }
+  });
 });
 
 // error handler

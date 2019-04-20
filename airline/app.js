@@ -132,7 +132,7 @@ app.post('/signinAdmin', (req, res) => {
 });
 
 app.post('/search', (req, res) => {
-    console.log(sess.user_id);
+    console.log(sess.profile_id);
     var collection = db.get('flight_details');
     var from_place = req.body.from_place;
     var to_place = req.body.to_place;
@@ -167,6 +167,7 @@ app.post('/bookedSeats', function (req, res) {
   sess.flight_id = flightID;
   var dateFrom = req.body.dateFrom;
   sess.flight_departure_date = dateFrom;
+  
   //var sql = "select group_concat(seat_number) as seat_numbers from passenger_seat inner join air_ticket_info on passenger_seat.ticket_id = air_ticket_info.ticket_id  where flight_id = "+flightID+" and flight_departure_date ='"+ dateFrom+"';";
     collection.find({f_id: flightId, f_dep_date: dateFrom}, { seat_details:1}, function (err, result) {
     if (err) throw err;
@@ -217,7 +218,7 @@ app.post('/bookSeats', (req, res) => {
 app.post('/findmybooking', (req, res) => {
   var ticketid = req.body.ticketid;
   var lastname = req.body.lastname;
-  var u_email = sess.email_id;
+  var u_email = sess.user_email;
   var collection = db.get("ticket_details");
   //console.log(ticketid);
   //var sql = "select * from air_ticket_info where ticketid='"+ticketid;
@@ -244,10 +245,12 @@ app.post('/onlinecheckin', (req, res) => {
 
 //Anshul -- Complex query but since we are using one collection to store all the flight related data. This can be don. Need to check.
 app.post('/ticket', function(req, res){
+  var collection = db.get("ticket_details");
   console.log(req.body[0].ticket_id);
   var ticketid = req.body[0].ticket_id;
   var sql = "select air_flight.flight_id, air_flight_details.flight_departure_date, departure_time, flight_arrival_date, arrival_time, price, from_location, to_location from air_flight_details inner join air_ticket_info on air_flight_details.flight_id = air_ticket_info.flight_id inner join air_flight on air_flight.flight_id = air_flight_details.flight_id where ticket_id = '"+ticketid+"'";
-  con.query(sql, function(err, result){
+  
+  collection.find({_id:ticket_id}, function(err, result){
       if(err)
           throw err;
       res.send(result);
@@ -255,14 +258,18 @@ app.post('/ticket', function(req, res){
 });
 
 //Anshul -- Complex query but since we are using one collection to store all the flight related data. This can be don. Need to check.
+//Anirudh -- Got this working Partially - Need to Update the mongoDb collections
 app.post('/ticketList', function(req, res){
+  var collection = db.get("ticket_details");
   console.log(req.body);
   profile_id = sess.profile_id;
+  var prof_id = String(profile_id)
   var sql = "select air_flight.flight_id, air_ticket_info.ticket_id, air_flight_details.flight_departure_date, departure_time, flight_arrival_date, arrival_time, from_location, to_location from air_flight_details inner join air_ticket_info on air_flight_details.flight_id = air_ticket_info.flight_id inner join air_flight on air_flight.flight_id = air_flight_details.flight_id where profile_id = '"+profile_id+"'";
-  console.log(sql);
-  con.query(sql, function(err, result){
+  console.log(typeof prof_id);
+  collection.find({pf_id:prof_id}, function(err, result){
       if(err)
           throw err;
+      console.log(result);
       res.send(result);
   });
 });

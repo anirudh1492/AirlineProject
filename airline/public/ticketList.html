@@ -177,18 +177,18 @@
 					"</thead><tbody>";
 					for (i = 0; i < tickets.length; i++) {
 						ticketList+="<tr>"+
-						"<td>"+tickets[i].flight_id+"</td>"+
-						"<td>"+tickets[i].ticket_id+"</td>"+
+						"<td>"+tickets[i].f_id+"</td>"+
+						"<td>"+tickets[i]._id+"</td>"+
 						"<td>"+tickets[i].from_location+"</td>"+
 						"<td>"+tickets[i].to_location+"</td>"+
-						"<td>"+tickets[i].flight_departure_date.substring(0,10)+"</td>"+
+						"<td>"+tickets[i].f_dep_date.substring(0,10)+"</td>"+
 						"<td>"+tickets[i].departure_time+"</td>"+
-						"<td>"+tickets[i].flight_arrival_date.substring(0,10)+"</td>"+
+						"<td>"+tickets[i].f_dep_date.substring(0,10)+"</td>"+
 						"<td>"+tickets[i].arrival_time+"</td>"+
 						"<td>"+
-						"<button class='btn btn-success' type='button' id='"+"Ticket"+tickets[i].ticket_id+"' class='TicketId' "+
-						"onclick='generateTicket("+tickets[i].ticket_id+")'>Generate</button>"+
-						" <button class='btn btn-success' type='button' id='"+"Modal"+tickets[i].ticket_id+"' class='bookSeatModal' data-toggle='modal' data-target='#ticketModal'>Ticket</button>"+
+						"<button class='btn btn-success' type='button' id='"+"Ticket"+tickets[i]._id+"' class='TicketId' "+
+						"onclick='generateTicket("+tickets[i]._id+")'>Generate</button>"+
+						" <button class='btn btn-success' type='button' id='"+"Modal"+tickets[i]._id+"' class='bookSeatModal' data-toggle='modal' data-target='#ticketModal'>Ticket</button>"+
 						"</td>"+
 						"</tr>"
 					}

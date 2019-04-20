@@ -264,7 +264,7 @@ app.post('/ticketList', function(req, res){
   console.log(req.body);
   profile_id = sess.profile_id;
   var prof_id = String(profile_id)
-  var sql = "select air_flight.flight_id, air_ticket_info.ticket_id, air_flight_details.flight_departure_date, departure_time, flight_arrival_date, arrival_time, from_location, to_location from air_flight_details inner join air_ticket_info on air_flight_details.flight_id = air_ticket_info.flight_id inner join air_flight on air_flight.flight_id = air_flight_details.flight_id where profile_id = '"+profile_id+"'";
+  //var sql = "select air_flight.flight_id, air_ticket_info.ticket_id, air_flight_details.flight_departure_date, departure_time, flight_arrival_date, arrival_time, from_location, to_location from air_flight_details inner join air_ticket_info on air_flight_details.flight_id = air_ticket_info.flight_id inner join air_flight on air_flight.flight_id = air_flight_details.flight_id where profile_id = '"+profile_id+"'";
   console.log(typeof prof_id);
   collection.find({pf_id:prof_id}, function(err, result){
       if(err)

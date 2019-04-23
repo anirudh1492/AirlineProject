@@ -4,14 +4,14 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-	<link rel="stylesheet" type="text/css" href="homepagestyle.css">
-	<link rel="stylesheet" type="text/css" href="ticket.css">
+	<link rel="stylesheet" type="text/css" href="./stylesheets/homepagestyle.css">
+	<link rel="stylesheet" type="text/css" href="./stylesheets/ticket.css">
 </head>
 <body>
 	<nav class="navbar navbar-inverse navbar-static-top">
 		<div class="container-fluid">
 			<div class="navbar-header">
-				<a class="navbar-brand" href="homepage.html">Book-A-Flight.com</a>
+				<a class="navbar-brand" href="homepage.html">Flight Booking</a>
 			</div>
 			<ul class="nav navbar-nav">	
 				<li class="dropdown">
@@ -54,7 +54,6 @@
 					<ul class="dropdown-menu">
 						<li><a href="#" id='flightStatus'>Flight Status</a></li>
 						<li><a href="foodanddrink.html">Food and Drink</a></li>
-						<li><a href="#">Airport Information</a></li>
 					</ul>
 				</li>
 			</ul>
@@ -80,7 +79,7 @@
 						<div class="boarding-pass-flight">
 							<ul class="clearfix">
 								<li>
-									<h1 id="modalFromLocation">BOM</h1>
+									<h1 id="modalFromLocation">LAS</h1>
 								</li>
 								<li>
 									<span class="fa fa-plane"></span>
@@ -94,11 +93,11 @@
 							<ul class="clearfix">
 								<li>
 									<h4>Date</h4>
-									<span id="modalDepartureDate">18 Jan'18</span>
+									<span id="modalDepartureDate">18 Dec'19</span>
 								</li>
 								<li>
 									<h4>Departure</h4>
-									<span id="modalDepartureTime">9:50 am</span>
+									<span id="modalDepartureTime">11:25 am</span>
 								</li>
 								<li>
 									<h4>Arrival</h4>
@@ -117,11 +116,11 @@
 							<ul class="clearfix">
 								<li>
 									<h4>flight</h4>
-									<span id="modalFlightId">lt 4060</span>
+									<span id="modalFlightId">IN 1126</span>
 								</li>
 								<li>
 									<h4>gate</h4>
-									<span>A5</span>
+									<span>B7</span>
 								</li>
 							</ul>
 						</div>
@@ -150,7 +149,7 @@
 	</div>
 	<script type="text/javascript">
 		$(function(){
-			sessionStorage.setItem("profile_id", "45"); //change here
+			// sessionStorage.setItem("profile_id", "45"); //change here
 			var profile_id = sessionStorage.getItem("profile_id");
 			var obj = [];
 			obj.push({"profile_id": profile_id});

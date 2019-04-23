@@ -6,6 +6,7 @@ var logger = require('morgan');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var sess
+const fs = require('fs');
 var indexRouter = require('./routes');
 var usersRouter = require('./routes/users');
 //var index = 8;
@@ -168,7 +169,7 @@ app.post('/bookedSeats', function (req, res) {
   sess.flight_departure_date = dateFrom;
   
   //var sql = "select group_concat(seat_number) as seat_numbers from passenger_seat inner join air_ticket_info on passenger_seat.ticket_id = air_ticket_info.ticket_id  where flight_id = "+flightID+" and flight_departure_date ='"+ dateFrom+"';";
-    collection.find({f_id: flightId, f_dep_date: dateFrom}, { seat_details:1}, function (err, result) {
+    collection.find({f_id: flightID, f_dep_date: dateFrom}, { seat_details:1}, function (err, result) {
     if (err) throw err;
     res.send(result);
   });
@@ -179,27 +180,41 @@ app.post('/bookSeats', (req, res) => {
   console.log(req.body.length);
   //var profile_id = sess.profile_id;
   var email_id = sess.user_email;
-  var flight_id = sess.flight_id;
+//   var flight_id = sess.flight_id;
+//   var flight_id = Math.floor(Math.random() * 100);
   var flight_departure_date = sess.flight_departure_date;
   var seatArray = [];
-  var passangerDetails = [];
+  var passengerDetails = [];
   //To auto-increment ticket_id
-  var sequenceDocument = collection.findAndModify({
-    query:{_id: sequenceName },
-    update: {$inc:{sequence_value:1}},
-    new:true
- });
-
- //To get details of multiple people in one bookin
+//   var sequenceDocument = collection.findAndModify({
+//     query:{_id: sequenceName },
+//     update: {$inc:{sequence_value:1}},
+//     new:true
+//  });
+    var flight_id;
+    var flight_dep_date;
+    var from;
+	var to;
+	var departure_time;
+	var arrival_time;
+ //To get details of multiple people in one booking
   for (var i = 0; i < req.body.length; i++) {
+    sess.flight_departure_date = req.body[i].dateFrom;
+    flight_dep_date = req.body[i].dateFrom;
+    flight_id = req.body[i].flight_id;
+    from = req.body[i].from;
+	to = req.body[i].to;
+	departure_time = req.body[i].departure_time;
+	arrival_time = req.body[i].arrival_time;
     seatArray.push(req.body[i].seatnumber);
-    passangerDetails.push(req.body[i].passengername);
+    passengerDetails.push(req.body[i].passengername);
   }
 
   var flight_status = 1;
+  var prof_id = String(sess.profile_id);
   
-  collection.insert({_id:sequenceDocument.sequence_value, booked_by: email_id, f_id: flight_id, f_dep_date: flight_departure_date, f_status: flight_status,
-  seat_details:seatArray, passenger_details: passangerDetails}, function (err, result) {
+  collection.insert({pf_id:prof_id, booked_by: email_id, f_id: flight_id, f_dep_date: flight_dep_date, f_status: flight_status,
+  seat_details:seatArray, passenger_details: passengerDetails,from_location:from,to_location:to,departure_time:departure_time,arrival_time:arrival_time}, function (err, result) {
     try {
       if (err) {
         throw err;
@@ -264,7 +279,7 @@ app.post('/ticketList', function(req, res){
   profile_id = sess.profile_id;
   var prof_id = String(profile_id)
   //var sql = "select air_flight.flight_id, air_ticket_info.ticket_id, air_flight_details.flight_departure_date, departure_time, flight_arrival_date, arrival_time, from_location, to_location from air_flight_details inner join air_ticket_info on air_flight_details.flight_id = air_ticket_info.flight_id inner join air_flight on air_flight.flight_id = air_flight_details.flight_id where profile_id = '"+profile_id+"'";
-  console.log(typeof prof_id);
+  console.log("prof_id",prof_id);
   collection.find({pf_id:prof_id}, function(err, result){
       if(err)
           throw err;

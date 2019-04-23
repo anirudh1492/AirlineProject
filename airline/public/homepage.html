@@ -145,9 +145,48 @@
 		</div>
 	</div>
 
+	<div id="bookModal" class="modal fade" role="dialog">
+		<div class="modal-dialog">
+			<!-- Modal content-->
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">Book Your Seats</h4>
+				</div>
+				<div class="modal-body">
+					<form id="book-form" >
+						<div class="form-group">
+							<span>Select Seat: </span>
+							<select name="seats" id="seats">
+								<option value="1A">1A</option>
+								<option value="1B">1B</option>
+								<option value="1C">1C</option>
+								<option value="1D">1D</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<input type="text" class="form-control" placeholder="Passenger Name" id="passengerName">
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal" onclick='seatSelect()'>Book</button>
+						</div>
+					</form>
+				</div>
+				
+			</div>
+
+		</div>
+	</div>
+
 <script>
+	var flight_id_var;
+	var departure_date_var;
 	var resultSearch;
 	var searchRes;
+	var from_var;
+	var to_var;
+	var departure_time_var;
+	var arrival_time_var;
 	$(function(){
 		$('#searchForm').submit(function(event){
 			event.preventDefault();
@@ -157,7 +196,7 @@
 				type: 'POST',
 				success: function(ser){
 					searchRes = ser;
-					console.log(searchRes);
+					console.log("searchRes",searchRes);
 					resultSearch = "<table class='table table-hover'>"+
 					"<thead>"+
 					"<tr>"+
@@ -188,7 +227,8 @@
 						"<td>"+searchRes[i+j].arrival_time+"</td>"+
 						"<td>"+searchRes[i+j].price+"</td>"+
 						"<td>"+
-						"<button class='btn btn-success' type='button' value='Book' id='bookSeat' class='bookSeat' onclick='seatSelect()'>Book</button>"+
+						// "<button class='btn btn-success' type='button' value='Book' id='bookSeat' class='bookSeat' onclick='seatSelect()'>Book</button>"+
+						" <button class='btn btn-success' type='button' value='Book' id='bookSeatModal' class='bookSeatModal' data-toggle='modal' data-target='#bookModal'>Bookmodal</button>"+
 						" <button class='btn btn-success' type='button' value='Book' id='bookSeatModal' class='bookSeatModal' data-toggle='modal' data-target='#baggageModal'>Baggage</button>"+
 						"</td>"+
 						"</tr>"
@@ -217,33 +257,67 @@
 	// 		$('#seatSelection').html(res);
 	// 	});
 	// }
-	function seatSelect(flightId,dateFrom){
-		console.log("flightID"+flightId);
+	//(flightId,dateFrom)
+	function seatSelect(){
+		// console.log("flightID"+flightId);
+		var pname = $('#passengerName').val();
+		var selectedSeat = $( "#seats" ).val();
+		console.log("pname",pname);
+		console.log("selectedSeat",selectedSeat);
+		sessionStorage.setItem("seat_numbers",selectedSeat);
 
-		var formdata = {
-			"flightId": flightId,
-			"dateFrom":dateFrom
-		};
+		var details = [];
+		details.push({"seatnumber": selectedSeat, "passengername": pname,"flight_id":flight_id_var,"dateFrom":departure_date_var, "from":from_var,
+	 "to": to_var,
+	 "departure_time": departure_time_var,
+	 "arrival_time": arrival_time_var});
+		// $("#passengerDetails").find('tr').each(function(){
+		// var seatnumber = $(this).find("td:eq(0)").html();
+		// var passengername = $(this).find("td:eq(1) input[type='text']").val();
+		// if(typeof seatnumber !== "undefined" || typeof passengername !== "undefined"){
+		// 	details.push({"seatnumber": seatnumber, "passengername": passengername});
+		// }
+		// });
+		console.log(details);
 		$.ajax({
-			type: "POST",
-			url: "/bookedSeats", 
-			data: formdata,
-			success: function(data){
-				console.log(data[0].seat_numbers);
-				sessionStorage.setItem("seat_numbers",data[0].seat_numbers);
-			},
-			failure: function(errMsg) {
-				alert("Cannot delete");
-			}
+		type: "POST",
+		url: "/bookSeats", 
+		data: JSON.stringify(details),
+		contentType: "application/json; charset=utf-8",
+		dataType: "json",
+		success: function(data){
+			console.log(data);
+		},
+		failure: function(errMsg) {
+			alert(errMsg);
+		}
 		});
+		window.location.replace("ticketList.html");
 
-        /*$.get('/bookedSeats',function(res) {
+		// var formdata = {
+		// 	"pname": pname,
+		// 	"selectedSeat":selectedSeat
+		// };
+		// $.ajax({
+		// 	type: "POST",
+		// 	url: "/bookedSeats", 
+		// 	data: formdata,
+		// 	success: function(data){
+		// 		console.log(data[0].seat_numbers);
+		// 		sessionStorage.setItem("seat_numbers",data[0].seat_numbers);
+		// 	},
+		// 	failure: function(errMsg) {
+		// 		alert("Cannot delete");
+		// 	}
+		// });
+
+        // /*$.get('/bookedSeats',function(res) {
             
-            sessionStorage.setItem("seat_numbers",res[0].seat_numbers);
-        });*/
-        $.post('/seatSelect', function(res) {
-        	$('#seatSelection').html(res);
-        });
+        //     sessionStorage.setItem("seat_numbers",res[0].seat_numbers);
+        // });*/
+        // $.post('/seatSelect', function(res) {
+        // 	$('#seatSelection').html(res);
+        // });
     }
 
 
@@ -320,10 +394,10 @@
 	// }
 	function giveResult(x)
 	{
-		console.log("give res");
+		
 		var pageNo = x;
 		var rec_len = 2;
-		console.log("x" + x);
+		
 		var len = searchRes.length;
 		var NumOfPages = Math.ceil(len/rec_len);
 
@@ -352,10 +426,15 @@
             // var ind = i +j;
             console.log(i + " "+ j);
             console.log(searchRes[0].airline_id);
-            var temp = searchRes[i+j].departure_dates.substring(0,10);
-            console.log('tmp'+temp);
-            var temp2 ='seatSelect('+searchRes[i+j].airline_id+',"'+temp+'")';
-            console.log('tmp2'+temp2);
+			departure_date_var = searchRes[i+j].departure_dates.substring(0,10);
+			from_var = searchRes[i+j].from;
+			to_var = searchRes[i+j].to;
+			departure_time_var = searchRes[i+j].departure_time;
+			arrival_time_var = searchRes[i+j].arrival_time;
+            // console.log('tmp'+temp);
+			// flight_id_var ='seatSelect('+searchRes[i+j].airline_id+',"'+temp+'")';
+			flight_id_var =searchRes[i+j].airline_id;
+            // console.log('tmp2'+temp2);
             resultSearch+="<tr>"+
             "<td>"+searchRes[i+j].airline_id+"</td>"+
             "<td>"+searchRes[i+j].airline_name+"</td>"+
@@ -367,7 +446,8 @@
             "<td>"+searchRes[i+j].arrival_time+"</td>"+
             "<td>"+searchRes[i+j].price+"</td>"+
             "<td>"+
-            "<button class='btn btn-success' type='button' value='Book' id='bookSeat' class='bookSeat' onclick="+temp2+">Book</button>"+
+			// "<button class='btn btn-success' type='button' value='Book' id='bookSeat' class='bookSeat' onclick="+temp2+">Book</button>"+
+			" <button class='btn btn-success' type='button' value='Book' id='bookSeatModal' class='bookSeatModal' data-toggle='modal' data-target='#bookModal'>Book</button>"+
             " <button class='btn btn-success' type='button' value='Book' id='bookSeatModal' class='bookSeatModal' data-toggle='modal' data-target='#baggageModal'>Baggage</button>"+
             "</td>"+
             "</tr>"

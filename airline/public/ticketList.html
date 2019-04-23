@@ -186,8 +186,8 @@
 						"<td>"+tickets[i].arrival_time+"</td>"+
 						"<td>"+
 						"<button class='btn btn-success' type='button' id='"+"Ticket"+tickets[i]._id+"' class='TicketId' "+
-						"onclick='generateTicket("+tickets[i]._id+")'>Generate</button>"+
-						" <button class='btn btn-success' type='button' id='"+"Modal"+tickets[i]._id+"' class='bookSeatModal' data-toggle='modal' data-target='#ticketModal'>Ticket</button>"+
+						"onclick='generateTicket(\""+tickets[i].f_dep_date+"\")'>Generate</button>"+
+						" <button class='btn btn-success' type='button' id='"+"Modal"+tickets[i].f_id+"' class='bookSeatModal' data-toggle='modal' data-target='#ticketModal'>Ticket</button>"+
 						"</td>"+
 						"</tr>"
 					}
@@ -213,10 +213,10 @@
 					console.log(ticket);
 					document.getElementById("modalFromLocation").innerHTML = ticket[0].from_location;
 					document.getElementById("modalToLocation").innerHTML = ticket[0].to_location;
-					document.getElementById("modalDepartureDate").innerHTML = ticket[0].flight_departure_date.substring(0,10);
+					document.getElementById("modalDepartureDate").innerHTML = ticket[0].f_dep_date.substring(0,10);
 					document.getElementById("modalDepartureTime").innerHTML = ticket[0].departure_time;
 					document.getElementById("modalArrivalTime").innerHTML = ticket[0].arrival_time;
-					document.getElementById("modalFlightId").innerHTML = ticket[0].flight_id;
+					document.getElementById("modalFlightId").innerHTML = ticket[0].f_id;
 				},
 				failure: function(errMsg) {
 					console.log(errMsg);

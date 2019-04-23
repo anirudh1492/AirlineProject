@@ -14,7 +14,6 @@ var usersRouter = require('./routes/users');
 var monk = require('monk');
 var db = monk('localhost:27017/airline');
 
-
 var app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -288,20 +287,20 @@ app.post('/passenger', (req, res) => {
   });
 });
 
-//Anshul -- Maybe we need to set a deleted tag.
 app.post('/flight', (req, res) => {
   var collection = db.get("flight_details");
   //var sql = "select flight_id, airline_name, from_location, to_location, total_seats from air_flight where deleted!='1'";
-  collections.find({deleted:0},{airline_id:1,airline_name:1,from:1,to:1,total_seats:1},
+  collection.find({deleted:0},{airline_id:1,airline_name:1,from:1,to:1,total_seats:1},
     function(err,result){
       if(err)throw err;
       res.send(result);
     });
 });
 
-//Anshul -- complex query. Need to check.
 app.post('/flights', (req, res) => {
-  var airline_name = req.body.airlinename;
+  console.log(req.body);
+  var a_name = req.body.airlinename;
+  var airlineid = parseInt(req.body.airlineid);
   var from_location = req.body.fromlocation;
   var to_location = req.body.tolocation;
   var totalseats = req.body.totalseats;
@@ -309,35 +308,29 @@ app.post('/flights', (req, res) => {
   var departuretime = req.body.departuretime;
   var arrivaldate = req.body.arrivaldate;
   var arrivaltime = req.body.arrivaltime;
-  var price = req.body.price;
-  var sql = "insert into air_flight(airline_name, from_location, to_location, total_seats, deleted) values('"+airline_name+"', '"+from_location+"', '"+to_location+"', '"+totalseats+"', '0')";
-  console.log(sql);
-  con.query(sql, function(err, result){
-      if(err)
-          throw err;
-      sql = "select flight_id from air_flight where airline_name='"+airline_name+"' and from_location='"+from_location+"' and to_location='"+to_location+"' and total_seats='"+totalseats+"'";
-      console.log(sql);
-      con.query(sql, function(err, result){
-          if(err)
-              throw err;
-          console.log(result[0].flight_id);
-          sql = "insert into air_flight_details(flight_id, flight_departure_date, departure_time, flight_arrival_date, arrival_time, price, available_seats, deleted) values"+
-          "('"+result[0].flight_id+"', '"+departuredate+"', '"+departuretime+"', '"+arrivaldate+"', '"+arrivaltime+"', '"+price+"', '"+totalseats+"', '0')";
-          con.query(sql, function(err, result){
-              if(err)
-                  throw err;
-              console.log("success");
-          });
-      });
-  });
+  var p = req.body.price;
+  var collection = db.get("flight_details");
+
+  collection.insert({airline_id:airlineid,airline_name:a_name,from:from_location,to:to_location,
+    total_seats:totalseats,departure_dates:departuredate,departure_time:departuretime,
+     arrival_date:arrivaldate, arrival_time:arrivaltime,price:p,seats_left:totalseats,deleted:0},
+      function(err,result){
+      if(err)throw err;
+      console.log("Insertion reult is");
+      console.log(result);
+      res.send("done");
+    });
 });
 
 app.post('/updateFlight', (req, res) => {
-  var flight_id = req.body.flight_id;
+  var flight_id = parseInt(req.body.flight_id);
   var seat_number = req.body.seats;
   console.log(flight_id+"-"+seat_number);
   var collection = db.get("flight_details");
-  collection.update({airline_id:flight_id}, {$set:{total_seats:seat_number}});
+  collection.update({airline_id:flight_id}, {$set:{total_seats:seat_number}}, function(err, result){
+    if(err)throw err;
+    res.send("done");
+  });
   //sql = "update air_flight set total_seats='"+seat_number+"' where flight_id='"+flight_id+"'";
   // con.query(sql, function(err, result){
   //     if(err)
@@ -347,31 +340,15 @@ app.post('/updateFlight', (req, res) => {
 
 });
 
-//Anshul -- complex sql query. Need to check.
 app.post('/deleteflight', (req, res) => {
-  var flight_id = req.body.flight_id;
-  var sql = "select count(*) as count from air_ticket_info where flight_id='"+flight_id+"'";
-  console.log(sql);
-  con.query(sql, function(err, result){
-      if(err)
-          throw err;
-      console.log(result[0].count);
-      if(parseInt(result[0].count)==0){
-          sql = "update air_flight set deleted='1' where flight_id = '"+flight_id+"'";
-          con.query(sql, function(err, result){
-              if(err)
-                  throw err;
-              sql = "update air_flight_details set deleted='1' where flight_id = '"+flight_id+"'";
-              con.query(sql, function(err, result){
-                  if(err)
-                      throw err;
-                  console.log("Successfully soft-deleted");
-              });
-          });
-      } else{
-          console.log("Cannot delete");
-          res.send("error");
-      }
+  var collection = db.get("flight_details");
+  var aid = req.body.airline_id;
+  console.log("airline id to be deleted is ");
+  airlineid = parseInt(aid);
+  console.log(airlineid);
+  collection.update({airline_id:airlineid}, {$set:{deleted:1}}, function(err, result){
+    if(err)throw err;
+    res.send(result);
   });
 });
 

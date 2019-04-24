@@ -140,10 +140,20 @@ app.post('/search', (req, res) => {
     var date_from = req.body.date_from;
     var num_passengers = req.body.num_passengers;
     var sortorder = req.body.sortorder;
+    var sortt = {price:1};
     //var sql = "select air_flight.flight_id, air_flight.from_location, air_flight.to_location, airline_name, flight_departure_date, flight_arrival_date, departure_time, arrival_time, price  from air_flight inner join air_flight_details on air_flight.flight_id = air_flight_details.flight_id where from_location='"+from_place+"' and to_location='"+to_place+"' and total_seats >= '"+num_passengers +"' and flight_departure_date = '"+date_to+"' and air_flight.deleted!='1' order by price "+sortorder+";";
     //console.log(sql);
     //collection.find({$and:[{from:from_place},{to:to_place}]});
-    collection.find({$and:[{from:from_place},{to:to_place},{departure_dates:date_to}]}, function(err, flight){
+   /* collection.find({$and:[{from:from_place},{to:to_place},{departure_dates:date_to}]}, function(err, flight){
+        if (err) throw err; 
+        console.log(flight);
+        res.send(flight);
+       // res.end();
+       //console.log(flight);
+
+    });*/
+
+    collection.find({},{sort:{price:1}},function(err, flight){
         if (err) throw err; 
         console.log(flight);
         res.send(flight);
@@ -151,6 +161,8 @@ app.post('/search', (req, res) => {
        //console.log(flight);
 
     });
+    
+    //res.send(ouput);
 });
 
 app.get('/resetSession',function(req,res){
@@ -250,7 +262,7 @@ app.post('/ticket', function(req, res){
   var ticketid = req.body[0].ticket_id;
   //var sql = "select air_flight.flight_id, air_flight_details.flight_departure_date, departure_time, flight_arrival_date, arrival_time, price, from_location, to_location from air_flight_details inner join air_ticket_info on air_flight_details.flight_id = air_ticket_info.flight_id inner join air_flight on air_flight.flight_id = air_flight_details.flight_id where ticket_id = '"+ticketid+"'";
   
-  collection.find({f_dep_date:ticketid}, function(err, result){
+  collection.find({pf_id:ticketid}, function(err, result){
       if(err)
           throw err;
       res.send(result);
@@ -282,7 +294,8 @@ app.post('/passenger', (req, res) => {
   var collection = db.get("ticket_details");
   //var sql = "select group_concat(fullname) as passengers from passenger_seat where ticket_id = '"+ticket_id+"'";
   //console.log(sql);
-  collection.find({_id:ticket_id},{passenger_details:1}, function(err, result){
+  collection.find({pf_id:ticket_id},{passenger_details:1}, function(err, result){
+    console.log(result);
     if(err)throw err;
     res.send(result);
   });

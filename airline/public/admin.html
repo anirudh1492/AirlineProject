@@ -16,7 +16,6 @@
 			<ul class="nav navbar-nav">
 				<li class="active"><a href="#">Home</a></li>
 				<li><a onclick="listFlights()" href="#">List</a></li>
-				<li><a onclick="updateFlight()" href="#">Update</a></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
 				<li>
@@ -61,6 +60,10 @@
 					<input type="text" class="form-control" id="airlinename">
 				</div>
 				<div class="form-group">
+					<label for="text">Airline ID</label>
+					<input type="text" class="form-control" id="airlineid">
+				</div>
+				<div class="form-group">
 					<label for="text">From Location</label>
 					<input type="text" class="form-control" id="fromlocation">
 				</div>
@@ -101,9 +104,11 @@
 	<script>
 		$(function() {
 			$('#flightForm').submit(function(event) {
+				console.log("submit button clicked");
 				event.preventDefault();
 				var formdata = {
 					"airlinename": $('#airlinename').val(),
+					"airlineid": $('#airlineid').val(),
 					"fromlocation": $('#fromlocation').val(),
 					"tolocation": $('#tolocation').val(),
 					"totalseats": $('#totalseats').val(),
@@ -119,14 +124,19 @@
 					url: "/flights", 
 					data: formdata,
 					success: function(data){
-						if(data !== "done")
+						console.log("Data received back is " + data);
+						if(data === "done")
+						{
+							alert("Registration successful");
+							window.location.replace('admin.html');
+						}
+						else
 							alert("Registration error. Please retry!");
 					},
 					failure: function(errMsg) {
 						alert("Registration error. Please retry!");
 					}
 				});
-				window.location.replace('admin.html');
 			});
 
 			$('#updateForm').submit(function(event){
@@ -140,14 +150,20 @@
 					url: "/updateFlight", 
 					data: formdata,
 					success: function(data){
-						if(data == "Updated")
+						if(data === "done")
+						{
 							alert("Updated");
+							window.location.replace('admin.html');
+						}
+						else
+						{
+							alert("Update failed. Please retry!");
+						}
 					},
 					failure: function(errMsg) {
 						alert("Error");
 					}
 				});
-				window.location.replace('admin.html');
 			});
 		});
 
@@ -156,6 +172,7 @@
 			$.ajax({
 				url: "/flight",
 				type: 'POST',
+				dataType: "json",
 				success: function(searchRes){
 					console.log(searchRes);
 					var resultSearch = "<table class='table table-hover'>"+
@@ -171,14 +188,14 @@
 					"</thead><tbody>";
 					for (i = 0; i < searchRes.length; i++) {
 						resultSearch+="<tr>"+
-						"<td>"+searchRes[i].flight_id+"</td>"+
+						"<td>"+searchRes[i].airline_id+"</td>"+
 						"<td>"+searchRes[i].airline_name+"</td>"+
-						"<td>"+searchRes[i].from_location+"</td>"+
-						"<td>"+searchRes[i].to_location+"</td>"+
+						"<td>"+searchRes[i].from+"</td>"+
+						"<td>"+searchRes[i].to+"</td>"+
 						"<td>"+searchRes[i].total_seats+"</td>"+
 						"<td>"+
 						"<button class='btn btn-danger' type='button' id='"+"delete"+searchRes[i].flight_id+"' class='deleteFlight' "+
-						"onclick='deleteFlight("+searchRes[i].flight_id+")'>Delete</button> "+
+						"onclick='deleteFlight("+searchRes[i].airline_id+")'>Delete</button> "+
 						"</td>"+
 						"</tr>"
 					}
@@ -186,22 +203,27 @@
 					$('#result').html(resultSearch);
 				},
 				error: function(xhr, status, error){
-					console.log("Error");
+					console.log(xhr);
+					console.log(status);
+					console.log(error);
 				}
 			});
 		}
 		
 		function deleteFlight(flight_id){
 			var formdata = {
-				"flight_id": flight_id
+				"airline_id": flight_id
 			};
 			$.ajax({
 				type: "POST",
 				url: "/deleteFlight", 
 				data: formdata,
+				dataType: "json",
 				success: function(data){
-					if(data !== "done")
-						alert("Cannot Delete");
+					if(parseInt(data.nModified)>=1)
+						alert("Deletion successful");
+					else
+						alert("can not delete the give flight");
 				},
 				failure: function(errMsg) {
 					alert("Cannot delete");

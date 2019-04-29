@@ -9,6 +9,8 @@ var sess
 const fs = require('fs');
 var indexRouter = require('./routes');
 var usersRouter = require('./routes/users');
+var crypto = require('crypto');
+
 //var index = 8;
 
 
@@ -42,6 +44,7 @@ app.get('/', function (req, res) {
 app.post('/signin', function(req, res) {
     var collection = db.get('user');
     var p = req.body.password;
+    var md5_p = crypto.createHash('md5').update(p).digest("hex");
     collection.find({user_email:req.body.emailid}, function(err, result){
         if (err){ 
             console.log("error ",err);
@@ -50,7 +53,7 @@ app.post('/signin', function(req, res) {
         }
         if(result){
             if(result[0]){
-                if(p == result[0].user_pass){
+                if(md5_p == result[0].user_pass){
                     sess = req.session;
                     // console.log("result ",result);
                     sess.user_email = result[0]['user_email'];  
@@ -103,7 +106,8 @@ app.post('/signup', (req, res) => {
             }
             else
             {
-                collection.insert({fname:firstname,lname:lastname,user_pass:password,user_email:emailid},function(err,result){
+                var pass_md5 = crypto.createHash('md5').update(password).digest("hex");
+                collection.insert({fname:firstname,lname:lastname,user_pass:pass_md5,user_email:emailid},function(err,result){
                     try{
                         if(err){
                             throw err;

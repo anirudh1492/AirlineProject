@@ -45,6 +45,7 @@ app.post('/signin', function(req, res) {
     var collection = db.get('user');
     var p = req.body.password;
     var md5_p = crypto.createHash('md5').update(p).digest("hex");
+    console.log(md5_p);
     collection.find({user_email:req.body.emailid}, function(err, result){
         if (err){ 
             console.log("error ",err);

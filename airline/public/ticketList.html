@@ -143,7 +143,6 @@
 					"<td>From Time</td>"+
 					"<td>To Date</td>"+
 					"<td>To Time</td>"+
-					//"<td>Actions</td>"+
 					"<td>Passengers</td>"+
 					"</tr>"+
 					"</thead><tbody>";
@@ -171,49 +170,7 @@
 			});
 		});
 
-		/*function generateTicket(ticket_id){
-			var obj = [];
-			obj.push({"ticket_id": ticket_id});
-			$.ajax({
-				type: "POST",
-				url: "/ticket",
-				data: JSON.stringify(obj),
-				contentType: "application/json; charset=utf-8",
-				dataType: "json",
-				success: function(ticket){
-					console.log(ticket);
-					document.getElementById("modalFromLocation").innerHTML = ticket[0].from;
-					document.getElementById("modalToLocation").innerHTML = ticket[0].to;
-					document.getElementById("modalDepartureDate").innerHTML = ticket[0].f_dep_date;
-					document.getElementById("modalDepartureTime").innerHTML = ticket[0].departure_time;
-					document.getElementById("modalArrivalTime").innerHTML = ticket[0].arrival_time;
-					document.getElementById("modalFlightId").innerHTML = ticket[0].f_id;
-				},
-				failure: function(errMsg) {
-					console.log(errMsg);
-				}
-			});
-
-			$.ajax({
-				type: "POST",
-				url: "/passenger",
-				data: JSON.stringify(obj),
-				contentType: "application/json; charset=utf-8",
-				dataType: "json",
-				success: function(passengers){
-					console.log(passengers[0]);
-					var passengernames = passengers[0].passengers.split(',');
-					var formattedPassengerNames = "";
-					for (var i = 0 ;i< passengernames.length;i++) {
-						formattedPassengerNames+= passengernames[i]+"<br>";
-					}
-					document.getElementById("modalPassengerList").innerHTML = formattedPassengerNames;
-				},
-				failure: function(errMsg) {
-					console.log(errMsg);
-				} 
-			});
-		}*/
+		
 
 	</script>
 </body>

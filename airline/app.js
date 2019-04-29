@@ -49,16 +49,47 @@ app.get('/', function (req, res) {
 
 app.post('/signin', function(req, res) {
     var collection = db.get('user');
-    collection.find({user_email:req.body.emailid,user_pass:req.body.password}, function(err, result){
-        if (err) throw err;
-        //res.redirect('/public/homepage.html');
-        sess = req.session;
-        sess.user_email = result[0]['user_email'];  
-        sess.profile_id = result[0]['_id'];
-      	//res.json(videos);
-      	res.cookie('name','test',{expire:360000+Date.now()}); 
-        res.redirect('/public/homepage.html');
-
+    var p = req.body.password;
+    collection.find({user_email:req.body.emailid}, function(err, result){
+        if (err){ 
+            console.log("error ",err);
+            // throw err;
+            res.redirect('/public/homepage.html');
+        }
+        if(result){
+            // console.log("p ",p);
+            // console.log("result.user_pass ",result[0].user_pass);
+            if(result[0]){
+                if(p == result[0].user_pass){
+                    sess = req.session;
+                    // console.log("result ",result);
+                    sess.user_email = result[0]['user_email'];  
+                    sess.profile_id = result[0]['_id'];
+                    //res.json(videos);
+                    res.cookie('name','test',{expire:360000+Date.now()}); 
+                    res.redirect('/public/homepage.html');
+                }  
+                else
+                {
+                    console.log("Wrong password ");
+                    // alert("Wrong credentials");
+                    res.redirect('/public/homepage.html');
+                }
+            }
+            else
+            {
+                console.log("no result ",result);
+                // alert("Wrong credentials");
+                res.redirect('/public/homepage.html');
+            }
+              
+        } 
+        else
+        {
+            console.log("no result ",result);
+            // alert("Wrong credentials");
+            res.redirect('/public/homepage.html');
+        }
     });
     
     

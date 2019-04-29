@@ -140,6 +140,7 @@ app.post('/search', (req, res) => {
     var date_from = req.body.date_from;
     var num_passengers = req.body.num_passengers;
     var sortorder = req.body.sortorder;
+    console.log(typeof(parseInt(sortorder)));
     var sortt = {price:1};
     //var sql = "select air_flight.flight_id, air_flight.from_location, air_flight.to_location, airline_name, flight_departure_date, flight_arrival_date, departure_time, arrival_time, price  from air_flight inner join air_flight_details on air_flight.flight_id = air_flight_details.flight_id where from_location='"+from_place+"' and to_location='"+to_place+"' and total_seats >= '"+num_passengers +"' and flight_departure_date = '"+date_to+"' and air_flight.deleted!='1' order by price "+sortorder+";";
     //console.log(sql);
@@ -153,7 +154,7 @@ app.post('/search', (req, res) => {
 
     });*/
 
-    collection.find({},{sort:{price:1}},function(err, flight){
+    collection.find({},{sort:{price:parseInt(sortorder)}},function(err, flight){
         if (err) throw err; 
         console.log(flight);
         res.send(flight);

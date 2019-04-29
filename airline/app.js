@@ -102,36 +102,36 @@ app.post('/signup', (req, res) => {
     var password = req.body.password;
     var emailid = req.body.emailid;
     var mobile = parseInt(req.body.mobile);
-    console.log(password);
-    //var sql = "insert into user_profile(user_password, firstname, lastname, mobile_number, email_id) values (MD5('"+password+"'),'"+firstname+"','"+lastname+"','"+mobile+"','"+emailid+"')";
-    //console.log(sql);
-    //con.query(sql, function(err, result){
-      //  try{
-        //    if(err){
-                //throw err;
-          //  }
-            //console.log("1 record added");
-            //res.send("done");
-        //}
-        //catch(err){
-          //  res.send(err);
-        //}
-    //});
-
-    collection.insert({fname:firstname,lname:lastname,user_pass:password,user_email:emailid},function(err,result){
-        try{
+    // console.log(password);
+    collection.find({user_email:emailid},function(err,result){
             if(err){
                 throw err;
             }
+            if(result[0]){
+                console.log("record exists");
+                res.send("taken");
+            }
+            else
+            {
+                collection.insert({fname:firstname,lname:lastname,user_pass:password,user_email:emailid},function(err,result){
+                    try{
+                        if(err){
+                            throw err;
+                        }
+                        
+                        console.log("record added");
+                        res.send("done");
+                    }
+                    catch(err){
+                        res.send(err);
+                    }
             
-            console.log("record added");
-            res.send("done");
-        }
-        catch(err){
-            res.send(err);
-        }
-
-    });
+                });
+            }
+            
+    }
+    );
+    
     //index = index+1;
 
 });

@@ -143,7 +143,8 @@ app.post('/seatSelect', function(req, res){
 
 app.post('/signinAdmin', (req, res) => {
   var collection = db.get('admin');
-  collection.find({user_email:req.body.emailid,user_pass:req.body.password}, function(err, result){
+  var md5_p = crypto.createHash('md5').update(req.body.password).digest("hex");
+  collection.find({user_email:req.body.emailid,user_pass:md5_p}, function(err, result){
         if (err) throw err;
         //res.redirect('/public/homepage.html');
         sess = req.session;

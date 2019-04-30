@@ -45,16 +45,16 @@
 		<div class="jumbotron">
 			<form class="form-inline" id="searchForm">
 				<div class="form-group">
-					<input type="text" class="form-control" id="from_place" name="from_place" placeholder="From" value="dfw">
+					<input type="text" class="form-control" id="from_place" name="from_place" placeholder="From" value="DFW">
 				</div>
 				<div class="form-group">
-					<input type="text" class="form-control" id="to_place" name="to_place" placeholder="To" value="del">
+					<input type="text" class="form-control" id="to_place" name="to_place" placeholder="To" value="DEL">
 				</div>
 				<div class="form-group">
 					<input type="date" class="form-control" id="date_to" name="date_to">
 				</div>
 				<div class="form-group">
-					<input type="number" class="form-control" id="num_passengers" name="num_passengers" placeholder="Passengers" value=1>
+					<input type="number" class="form-control" id="num_passengers" name="num_passengers" placeholder="Passengers">
 				</div>
 				<div class="form-group">
 					Price 
@@ -304,8 +304,8 @@
             "<td>"+searchRes[i+j].price+"</td>"+
             "<td>"+
 			// "<button class='btn btn-success' type='button' value='Book' id='bookSeat' class='bookSeat' onclick="+temp2+">Book</button>"+
-			" <button class='btn btn-success' type='button' value='Book' id='bookSeatModal' class='bookSeatModal' data-toggle='modal' data-target='#bookModal'>Book</button>"+
-            " <button class='btn btn-success' type='button' value='Book' id='bookSeatModal' class='bookSeatModal' data-toggle='modal' data-target='#baggageModal'>Baggage</button>"+
+			" <button class='btn btn-warning' type='button' value='Book' id='bookSeatModal' class='bookSeatModal' data-toggle='modal' data-target='#bookModal'>Book</button>"+
+            " <button class='btn btn-warning' type='button' value='Book' id='bookSeatModal' class='bookSeatModal' data-toggle='modal' data-target='#baggageModal'>Baggage</button>"+
             "</td>"+
             "</tr>"
         }
@@ -314,7 +314,7 @@
         $('#result').html(resultSearch);
         for(var t=1;t<=NumOfPages;t++)
         {
-        	$('#result').append(" <a class='btn btn-success' onClick = giveResult("+t+") href ='#' >"+t+"</a>");
+        	$('#result').append(" <a class='btn btn-warning' onClick = giveResult("+t+") href ='#' >"+t+"</a>");
         }
 
     }

@@ -107,3 +107,8 @@ body {
 	font-size: 7px;
 	position: absolute;
 }
+body{
+    background-image: url('../background/bck.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+}

@@ -169,7 +169,7 @@ app.post('/search', (req, res) => {
     console.log(typeof(parseInt(sortorder)));
     var sortt = {price:1};
 
-
+// Deepesh - the sort is now working in conjuction with the drop down value
     collection.find({},{sort:{price:parseInt(sortorder)}},function(err, flight){
         if (err) throw err; 
         console.log(flight);
@@ -189,19 +189,9 @@ app.get('/resetSession',function(req,res){
   res.send("Cokkie reset");
 });
 
-app.post('/bookedSeats', function (req, res) {
-  console.log("server side " + req.body.flightId);
-  var collection = db.get("ticket_details");
-  var flightID = req.body.flightId;
-  sess.flight_id = flightID;
-  var dateFrom = req.body.dateFrom;
-  sess.flight_departure_date = dateFrom;
-    collection.find({f_id: flightID, f_dep_date: dateFrom}, { seat_details:1}, function (err, result) {
-    if (err) throw err;
-    res.send(result);
-  });
-});
 
+
+// Deepesh - now able to get all the details to generate the ticket
 app.post('/bookSeats', (req, res) => {
   var collection = db.get('ticket_details');
   console.log(req.body.length);
@@ -235,7 +225,7 @@ app.post('/bookSeats', (req, res) => {
   var prof_id = String(sess.profile_id);
   
   collection.insert({pf_id:prof_id, booked_by: email_id, f_id: flight_id, f_dep_date: flight_dep_date, f_status: flight_status,
-  seat_details:seatArray, passenger_details: passengerDetails,from_location:from,to_location:to,departure_time:departure_time,arrival_time:arrival_time}, function (err, result) {
+  seat_details:seatArray, passenger_details: passengerDetails,from:from,to:to,departure_time:departure_time,arrival_time:arrival_time}, function (err, result) {
     try {
       if (err) {
         throw err;

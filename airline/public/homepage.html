@@ -184,7 +184,6 @@
 						"<td>"+searchRes[i+j].arrival_time+"</td>"+
 						"<td>"+searchRes[i+j].price+"</td>"+
 						"<td>"+
-						
 						" <button class='btn btn-success' type='button' value='Book' id='bookSeatModal' class='bookSeatModal' data-toggle='modal' data-target='#bookModal'>Bookmodal</button>"+
 						" <button class='btn btn-success' type='button' value='Book' id='bookSeatModal' class='bookSeatModal' data-toggle='modal' data-target='#baggageModal'>Baggage</button>"+
 						"</td>"+
@@ -207,7 +206,6 @@
 
 	
 	function seatSelect(){
-		// console.log("flightID"+flightId);
 		var pname = $('#passengerName').val();
 		var selectedSeat = $( "#seats" ).val();
 		console.log("pname",pname);
@@ -282,7 +280,7 @@
 			if(pageNo == NumOfPages){
 				rec_len = len -(pageNo-1)*rec_len;
 			}
-            // var ind = i +j;
+            
             console.log(i + " "+ j);
             console.log(searchRes[0].airline_id);
 			departure_date_var = searchRes[i+j].departure_dates.substring(0,10);
@@ -291,7 +289,7 @@
 			departure_time_var = searchRes[i+j].departure_time;
 			arrival_time_var = searchRes[i+j].arrival_time;
 			flight_id_var =searchRes[i+j].airline_id;
-            // console.log('tmp2'+temp2);
+            
             resultSearch+="<tr>"+
             "<td>"+searchRes[i+j].airline_id+"</td>"+
             "<td>"+searchRes[i+j].airline_name+"</td>"+
@@ -303,7 +301,7 @@
             "<td>"+searchRes[i+j].arrival_time+"</td>"+
             "<td>"+searchRes[i+j].price+"</td>"+
             "<td>"+
-			// "<button class='btn btn-success' type='button' value='Book' id='bookSeat' class='bookSeat' onclick="+temp2+">Book</button>"+
+			
 			" <button class='btn btn-warning' type='button' value='Book' id='bookSeatModal' class='bookSeatModal' data-toggle='modal' data-target='#bookModal'>Book</button>"+
             " <button class='btn btn-warning' type='button' value='Book' id='bookSeatModal' class='bookSeatModal' data-toggle='modal' data-target='#baggageModal'>Baggage</button>"+
             "</td>"+

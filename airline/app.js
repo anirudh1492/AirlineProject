@@ -127,19 +127,9 @@ app.post('/signup', (req, res) => {
     }
     );
     
-    //index = index+1;
 
 });
 
-app.post('/seatSelect', function(req, res){
-    var path = __dirname+"\\public\\flightSeats.html";
-    console.log(path);
-    fs.readFile(path, function(err, data){
-        res.writeHead(200, {'Content-Type': 'text/html'});
-        res.write(data);
-        res.end();
-    });
-});
 
 
 app.post('/signinAdmin', (req, res) => {
@@ -147,7 +137,7 @@ app.post('/signinAdmin', (req, res) => {
   var md5_p = crypto.createHash('md5').update(req.body.password).digest("hex");
   collection.find({user_email:req.body.emailid,user_pass:md5_p}, function(err, result){
         if (err) throw err;
-        //res.redirect('/public/homepage.html');
+        
         sess = req.session;
         sess.user_email = result[0]['user_email'];  
 
@@ -174,12 +164,11 @@ app.post('/search', (req, res) => {
         if (err) throw err; 
         console.log(flight);
         res.send(flight);
-       // res.end();
-       //console.log(flight);
+
 
     });
     
-    //res.send(ouput);
+    
 });
 
 app.get('/resetSession',function(req,res){
@@ -240,46 +229,6 @@ app.post('/bookSeats', (req, res) => {
   });
 });
 
-app.post('/findmybooking', (req, res) => {
-  var ticketid = req.body.ticketid;
-  var lastname = req.body.lastname;
-  var u_email = sess.user_email;
-  var collection = db.get("ticket_details");
-
-  collections.find({_id:ticketid,booked_by:u_email}, function(err, result){
-    if(err) throw err;
-    res.send(result);
-  });
-});
-
-//Anshul -- we need to use findAndModify with ticketid and email. This can be done later.
-app.post('/onlinecheckin', (req, res) => {
-  var ticketid = req.body.ticketid;
-  var lastname = req.body.lastname;
-  console.log(ticketid);
-  var sql = "SELECT (CASE WHEN count = 1 THEN 'present' ELSE 'not present' END) as isPresent FROM (SELECT COUNT(*) AS count FROM air_ticket_info INNER JOIN user_profile ON air_ticket_info.profile_id = user_profile.profile_id WHERE ticket_id = '"+ticketid+"' AND lastname = '"+lastname+"') AS a";
-  con.query(sql, function(err, result){
-      if (err) 
-          throw err;
-      if(!result.includes('not')){
-          sql = "insert into passenger_checkin(ticket_id, checkedin) values(ticketid, 'true')";
-      }
-  });
-});
-
-
-app.post('/ticket', function(req, res){
-  var collection = db.get("ticket_details");
-  console.log(req.body[0].ticket_id);
-  var ticketid = req.body[0].ticket_id;
-
-  collection.find({pf_id:ticketid}, function(err, result){
-      if(err)
-          throw err;
-      res.send(result);
-  });
-});
-
 
 //Anirudh -- Got this working Partially - Need to Update the mongoDb collections
 app.post('/ticketList', function(req, res){
@@ -298,18 +247,6 @@ app.post('/ticketList', function(req, res){
 });
 
 
-app.post('/passenger', (req, res) => {
-  console.log("passenger");
-  console.log(req.body[0].ticket_id);
-  ticket_id = req.body[0].ticket_id;
-  var collection = db.get("ticket_details");
-
-  collection.find({pf_id:ticket_id},{passenger_details:1}, function(err, result){
-    console.log(result);
-    if(err)throw err;
-    res.send(result);
-  });
-});
 
 app.post('/flight', (req, res) => {
   var collection = db.get("flight_details");
